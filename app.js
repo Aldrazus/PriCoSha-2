@@ -10,6 +10,7 @@ var logger = require('morgan');
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var registerRouter = require('./routes/register');
+var loginRouter = require('./routes/login');
 
 var app = express();
 
@@ -17,6 +18,7 @@ var app = express();
 var pool = require('./mysqlpool');
 
 //  Getting connection from pool and making test query.
+/*
 pool.getConnection(function (err, connection) {
   connection.query('SELECT * FROM Person', function (err, rows, fields) {
     if (err) throw err;
@@ -30,7 +32,13 @@ pool.getConnection(function (err, connection) {
 
   connection.release();
 });
+*/
 
+//  Testing auth
+/*
+var auth = require('./auth');
+auth.hashPassword('password', 'poop');
+*/
 
 
 // view engine setup
@@ -46,6 +54,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/register', registerRouter);
+app.use('/login', loginRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
