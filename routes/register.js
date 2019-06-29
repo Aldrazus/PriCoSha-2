@@ -2,29 +2,26 @@ var express = require('express');
 var router = express.Router();
 var pool = require('../mysqlpool');
 var auth = require('../auth');
+var { check, validationResult } = require('express-validator');
 
-router.get('/', function (req, res, next) {
+router.get('/', auth.redirectToHome, function (req, res, next) {
     res.render('register');
 });
+
+//  TODO: Add a UserID field that will be used for identifying user sessions.
+//        Encrypt using secret key?
 
 
 
 router.post('/auth', function (req, res, next) {
     //  Parse request
-    let userData = {
-        username: req.body.username,
-        password: req.body.password,
-        firstname: req.body.firstname,
-        lastname: req.body.lastname
-    };
-
-    console.log(req.body);
+    let { username, password, firstname, lastname } = req.body;
 
     //  Check database for existing username
     pool.getConnection(function (err, connection) {
         if (err) throw err;
         let queryExistingUser = 'SELECT * FROM Person WHERE username = ?'
-        connection.query(queryExistingUser, [userData.username], function (err, results, fields) {
+        connection.query(queryExistingUser, [username], function (err, results, fields) {
             if (err) throw err;
             //  If username not found (username available)
             if (results === undefined || results.length === 0) {
@@ -32,16 +29,18 @@ router.post('/auth', function (req, res, next) {
 
                 //  Generate salt and hashed password
                 let salt = auth.generateSalt();
-                let hashedPass = auth.hashPassword(userData.password, salt);
+                let hashedPass = auth.hashPassword(password, salt);
 
                 //  Insert user info into database
                 let queryInsertUserData = 'INSERT INTO Person VALUES (?, ?, ?, ?, ?)';
-                connection.query(queryInsertUserData, [userData.username, hashedPass, userData.firstname, userData.lastname, salt], function (err, results, fields) {
+                connection.query(queryInsertUserData, [username, hashedPass, firstname, lastname, salt], function (err, results, fields) {
                     if (err) throw err;
                     console.log("One entry added to Person table.");
                 });
                 //TODO: CREATE SESSION & REDIRECT USER
                 connection.release();
+                //  Maybe use uuid?
+                req.session.userID = username;
 
             //  Username is found (username not available)
             } else {
@@ -50,6 +49,8 @@ router.post('/auth', function (req, res, next) {
                 connection.release();
             }
         });
+
+        res.redirect('/home');
     })
 });
 

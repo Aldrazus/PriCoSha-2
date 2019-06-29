@@ -1,6 +1,8 @@
 //  App middleware.
 var createError = require('http-errors');
 var express = require('express');
+var session = require('express-session');
+var mysqlstore = require('express-mysql-session')(session);
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
@@ -11,50 +13,44 @@ var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var registerRouter = require('./routes/register');
 var loginRouter = require('./routes/login');
+var homeRouter = require('./routes/home');
+var logoutRouter = require('./routes/logout');
 
 var app = express();
 
-//  Setting up mySQL connection pool to 'pricosha' database.
+//  MySQL connection pool
 var pool = require('./mysqlpool');
 
-//  Getting connection from pool and making test query.
-/*
-pool.getConnection(function (err, connection) {
-  connection.query('SELECT * FROM Person', function (err, rows, fields) {
-    if (err) throw err;
-  
-    //  TODO: Remove synchronous logging.
-    console.log('Username: ' + rows[0].username);
-    console.log('Password: ' + rows[0].password);
-    console.log('First Name: ' + rows[0].first_name);
-    console.log('Last Name: ' + rows[0].last_name);
-  });
-
-  connection.release();
-});
-*/
-
-//  Testing auth
-/*
-var auth = require('./auth');
-auth.hashPassword('password', 'poop');
-*/
-
+//  Config
+var config = require('./config');
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'hbs');
 
+//  other middleware
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+//  setting up session store
+var sessionStore = new mysqlstore(config.pool);
+
+//  setting up session config to include new session store
+var sessionConfig = Object.assign({ store: sessionStore }, config.session);
+
+//  session middleware
+app.use(session(sessionConfig));
+
+//  router middleware
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/register', registerRouter);
 app.use('/login', loginRouter);
+app.use('/home', homeRouter);
+app.use('/logout', logoutRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

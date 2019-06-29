@@ -3,6 +3,6 @@ var config = require('./config');
 
 
 //  TODO: Put this in a config.
-var pool = mysql.createPool(config.db);
+var pool = mysql.createPool(config.pool);
 
 module.exports = pool;

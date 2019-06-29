@@ -18,7 +18,27 @@ function authUser(hashedPassAndSalt, password, salt) {
     return (hashedPassAndSalt === hash.digest('hex'));
 };
 
+function redirectToLogin(req, res, next) {
+    console.log(req.session);
+    if (!req.session.hasOwnProperty.call(req.session, 'userID')) {
+        res.redirect('/login');
+    } else {
+        next();
+    }
+}
+
+function redirectToHome(req, res, next) {
+    console.log(req.session);
+    if (req.session && req.session.hasOwnProperty.call(req.session, 'userID')) {
+        res.redirect('/home');
+    } else {
+        next();
+    }
+}
+
 
 exports.generateSalt = generateSalt;
 exports.hashPassword = hashPassword;
 exports.authUser = authUser;
+exports.redirectToLogin = redirectToLogin;
+exports.redirectToHome = redirectToHome;
