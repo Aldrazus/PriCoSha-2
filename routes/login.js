@@ -38,7 +38,12 @@ router.post('/auth', function (req, res, next) {
                     console.log('Password match! Logging in...');
                     //  Maybe use uuid?
                     req.session.userID = username;
-                    res.redirect('/home');  //  TODO: CHANGE THIS
+
+                    //  Save sessions when using redirect, 
+                    //  See https://github.com/expressjs/session#sessionsavecallback
+                    req.session.save((err) => {
+                        res.redirect('/home'); //   TODO CHANGE MAYBE?
+                    });
                 } else {
                     //TODO: REDIRECT USER / SHOW ERROR
                     console.log('Password does not match.');

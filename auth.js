@@ -20,7 +20,7 @@ function authUser(hashedPassAndSalt, password, salt) {
 
 function redirectToLogin(req, res, next) {
     console.log(req.session);
-    if (!req.session.hasOwnProperty.call(req.session, 'userID')) {
+    if (!req.session.userID) {
         res.redirect('/login');
     } else {
         next();
@@ -29,7 +29,7 @@ function redirectToLogin(req, res, next) {
 
 function redirectToHome(req, res, next) {
     console.log(req.session);
-    if (req.session && req.session.hasOwnProperty.call(req.session, 'userID')) {
+    if (req.session.userID) {
         res.redirect('/home');
     } else {
         next();

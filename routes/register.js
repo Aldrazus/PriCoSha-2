@@ -8,11 +8,6 @@ router.get('/', auth.redirectToHome, function (req, res, next) {
     res.render('register');
 });
 
-//  TODO: Add a UserID field that will be used for identifying user sessions.
-//        Encrypt using secret key?
-
-
-
 router.post('/auth', function (req, res, next) {
     //  Parse request
     let { username, password, firstname, lastname } = req.body;
@@ -40,7 +35,14 @@ router.post('/auth', function (req, res, next) {
                 //TODO: CREATE SESSION & REDIRECT USER
                 connection.release();
                 //  Maybe use uuid?
+                //  User ID is just the username right now.
+                //  Add field to sessions table with foreign key to Persons
                 req.session.userID = username;
+
+                //  Need to save session when redirecting, see login
+                req.session.save(err => {
+                    redirect('/home');
+                })
 
             //  Username is found (username not available)
             } else {
