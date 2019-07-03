@@ -35,6 +35,6 @@ pool.getConnection((err, connection) => {
 })
 
 //  Promisify query function for async stuff
-pool.query = util.promisify(pool.query);
+pool.query = pool.query;
 
 module.exports = pool;

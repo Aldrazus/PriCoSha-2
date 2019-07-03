@@ -19,7 +19,6 @@ function authUser(hashedPassAndSalt, password, salt) {
 };
 
 function redirectToLogin(req, res, next) {
-    console.log(req.session);
     if (!req.session.userID) {
         res.redirect('/login');
     } else {
@@ -28,7 +27,6 @@ function redirectToLogin(req, res, next) {
 }
 
 function redirectToHome(req, res, next) {
-    console.log(req.session);
     if (req.session.userID) {
         res.redirect('/home');
     } else {
