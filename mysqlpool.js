@@ -6,6 +6,14 @@ var util = require('util');
 //  TODO: Put this in a config.
 var pool = mysql.createPool(config.pool);
 
+pool.on('acquire', function (connection) {
+    console.log('Connection %d acquired', connection.threadId);
+});
+
+pool.on('release', function (connection) {
+    console.log('Connection %d released', connection.threadId);
+});
+
 //  Pinging database
 pool.getConnection((err, connection) => {
     if (err) {

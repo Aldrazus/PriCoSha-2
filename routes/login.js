@@ -20,44 +20,55 @@ router.post('/auth', async function (req, res, next) {
         password: req.body.password
     };
 
-    let queryUsername = 'SELECT username, password, salt FROM Person WHERE username = ?';
-    let rows = await pool.query(queryUsername, [userData.username]);
     let errorMessage;
 
-    if (rows === undefined || rows.length === 0) {
-        //  If username is not found (account doesn't exist)
-        console.log('Account doesn\'t exist');
-        errorMessage = loginError.INV_USERNAME;
+    let queryUsername = 'SELECT username, password, salt FROM Person WHERE username = ?';
+
+    pool.query(queryUsername, [userData.username], (err, rows) => {
+
+        if (err) throw err;
+
+        if (rows === undefined || rows.length === 0) {
+            //  If username is not found (account doesn't exist)
+            console.log('Account doesn\'t exist');
+            errorMessage = loginError.INV_USERNAME;
+            return;
+        }
+
+        //  Extract user credentials.
+        let username = rows[0].username;
+        let hashedPassAndSalt = rows[0].password;
+        let salt = rows[0].salt;
+
+        //  Check user credentials.
+        if (auth.authUser(hashedPassAndSalt, userData.password, salt)) {
+
+            //  User authenticated. Create session
+            console.log('Password match! Logging in...');
+            return;
+
+        } else {
+            //  User not authenticated.
+            console.log('Password does not match.');
+            errorMessage = loginError.INV_PASSWORD;
+            return;
+        }
+
+    });
+
+    if (errorMessage === loginError.INV_USERNAME) {
         res.render('login');
-    }
-
-    //  Extract user credentials.
-    let username = rows[0].username;
-    let hashedPassAndSalt = rows[0].password;
-    let salt = rows[0].salt;
-
-
-    //  Check user credentials.
-    if (auth.authUser(hashedPassAndSalt, userData.password, salt)) {
-
-        //  User authenticated. Create session
-        console.log('Password match! Logging in...');
-
+    } else if (errorMessage === loginError.INV_PASSWORD) {
+        res.render('login');
+    } else {
         //  Maybe use uuid?
-        req.session.userID = username;
+        req.session.userID = userData.username;
 
         //  Save sessions when using redirect, 
         //  See https://github.com/expressjs/session#sessionsavecallback
         req.session.save((err) => {
             res.redirect('/home'); //   TODO CHANGE MAYBE?
         });
-
-    } else {
-
-        //  User not authenticated.
-        console.log('Password does not match.');
-        errorMessage = loginError.INV_PASSWORD;
-        res.render('login');  //  TODO: CHANGE THIS TO SHOW ERROR MSG
     }
     
 });

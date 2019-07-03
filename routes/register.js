@@ -14,9 +14,21 @@ router.post('/auth', async function (req, res, next) {
 
     //  Check database for existing username
     let queryExistingUser = 'SELECT * FROM Person WHERE username = ?';
-    let rows = await pool.query(queryExistingUser, [username]);
+    let authenticated;
+    pool.query(queryExistingUser, [username], (err, rows) => {
+        if (err) throw err;
+        if (rows === undefined || rows.length === 0) {
+            console.log("This username is available.");
+            authenticated = true;
+        } else {
+            console.log('This username is unavailable.');
+            authenticated = false;
+        }
+    });
+
+
     
-    if (rows === undefined || rows.length === 0) {
+    if (authenticated) {
         console.log("This username is available.");
         //  Generate salt and hashed password
         let salt = auth.generateSalt();
@@ -25,6 +37,7 @@ router.post('/auth', async function (req, res, next) {
         //  Insert user info into database
         let queryInsertUserData = 'INSERT INTO Person VALUES (?, ?, ?, ?, ?)';
         pool.query(queryInsertUserData, [username, hashedPass, firstname, lastname, salt], (err) => {
+            if (err) throw err;
             console.log('One entry added to Person table.');
         });
 
