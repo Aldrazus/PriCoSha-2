@@ -1,0 +1,23 @@
+<h1>PriCoSha</h1>
+<section class="navbar">
+    <nav>
+        <a id="home" href="/profile">Home</a>
+        <a href="/post" id="home">Post</a>
+        <a href="/friends" id="friends">Friend Groups</a>
+        <a href="/logout" id="logout">Log Out</a>
+    </nav>
+</section>
+<section class="friendgroup">
+    <h2>{{group_name}} by {{username_creator}}</h2>
+    {{#if desc}}
+    <h4>{{desc}}</h4>
+    {{else}}
+    <h4><em>No description provided</em></h4>
+    {{/if}}
+    {{#members}}
+    <div class="members">
+        <p>{{first_name}} {{last_name}} ({{username}})</p>
+        <a href="REPLACEME">Unfriend</a>
+    </div>
+    {{/members}}
+</section>

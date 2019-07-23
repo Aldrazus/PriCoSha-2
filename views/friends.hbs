@@ -1,0 +1,43 @@
+<h1>PriCoSha</h1>
+<section class="navbar">
+    <nav>
+        <a id="home" href="/profile">Home</a>
+        <a href="/post" id="home">Post</a>
+        <a href="/friends" id="friends">Friend Groups</a>
+        <a href="/logout" id="logout">Log Out</a>
+    </nav>
+</section>
+<section class="owned-groups">
+    <h2>Friend Groups You Own</h2>
+    {{#owned}}
+        <p>{{group_name}}</p>
+        {{#if desc}}
+            <p>{{desc}}</p>
+        {{else}}
+            <em>No description provided</em>
+        {{/if}}
+        <a href="/manage/{{link}}">Manage Group</a>
+    {{/owned}}
+</section>
+<section class="group-create">
+    <h2>Make a Friend Group</h2>
+    <form action="/friends/auth" method="POST">
+        {{#if error}}
+        <p class="error">{{error}}</p>
+        {{/if}}
+        <input type="text" name="group_name" placeholder="Group Name" required>
+        <input type="text" name="description" placeholder="Description">
+        <input type="submit" name="submit" value="Create">
+    </form>
+</section>
+<section class="group-memberof">
+    <h2>Other Friend Groups You Are In</h2>
+    {{#member}}
+    <p>{{group_name}} by {{first_name}} {{last_name}}</p>
+    {{#if desc}}
+        <p>{{desc}}</p>
+    {{else}}
+        <em>No description provided</em>
+    {{/if}}
+    {{/member}}
+</section>

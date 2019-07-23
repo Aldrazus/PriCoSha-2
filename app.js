@@ -1,28 +1,29 @@
 //  App middleware.
-var createError = require('http-errors');
-var express = require('express');
-var session = require('express-session');
-var mysqlstore = require('express-mysql-session')(session);
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
+const createError = require('http-errors');
+const express = require('express');
+const session = require('express-session');
+const mysqlstore = require('express-mysql-session')(session);
+const path = require('path');
+const cookieParser = require('cookie-parser');
+const logger = require('morgan');
 
 
 //  Router middleware.
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
-var registerRouter = require('./routes/register');
-var loginRouter = require('./routes/login');
-var homeRouter = require('./routes/home');
-var logoutRouter = require('./routes/logout');
+const indexRouter = require('./routes/index');
+const registerRouter = require('./routes/register');
+const loginRouter = require('./routes/login');
+const homeRouter = require('./routes/home');
+const logoutRouter = require('./routes/logout');
+const friendsRouter = require('./routes/friends');
+const manageRouter = require('./routes/manage');
 
-var app = express();
+const app = express();
 
 //  MySQL connection pool
-var pool = require('./mysqlpool');
+const pool = require('./mysqlpool');
 
 //  Config
-var config = require('./config');
+const config = require('./config');
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -46,11 +47,12 @@ app.use(session(sessionConfig));
 
 //  router middleware
 app.use('/', indexRouter);
-app.use('/users', usersRouter);
 app.use('/register', registerRouter);
 app.use('/login', loginRouter);
 app.use('/home', homeRouter);
 app.use('/logout', logoutRouter);
+app.use('/friends', friendsRouter);
+app.use('/manage', manageRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

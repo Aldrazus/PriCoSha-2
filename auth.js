@@ -34,9 +34,18 @@ function redirectToHome(req, res, next) {
     }
 }
 
+function authUserGroup(req, res, next) {
+    if (req.session.userID !== req.params.user) {
+        res.redirect('/home');
+    } else {
+        next();
+    }
+}
+
 
 exports.generateSalt = generateSalt;
 exports.hashPassword = hashPassword;
 exports.authUser = authUser;
 exports.redirectToLogin = redirectToLogin;
 exports.redirectToHome = redirectToHome;
+exports.authUserGroup = authUserGroup;

@@ -1,6 +1,6 @@
-var express = require('express');
-var router = express.Router();
-var auth = require('../auth');
+const express = require('express');
+const router = express.Router();
+const auth = require('../auth');
 
 router.get('/', auth.redirectToLogin, function (req, res) {
     req.session.destroy(err => {

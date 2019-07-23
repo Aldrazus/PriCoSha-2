@@ -8,44 +8,44 @@ router.get('/', auth.redirectToHome, function (req, res, next) {
     res.render('register');
 });
 
-router.post('/auth', function (req, res, next) {
+router.post('/auth', async function (req, res, next) {
     //  Parse request
     let { username, password, firstname, lastname } = req.body;
 
     //  Check database for existing username
     let queryExistingUser = 'SELECT * FROM Person WHERE username = ?';
-    let authenticated;
-    pool.query(queryExistingUser, [username], (err, rows) => {
-        if (err) throw err;
-        if (rows === undefined || rows.length === 0) {
-            console.log("This username is available.");
-            //  Generate salt and hashed password
-            let salt = auth.generateSalt();
-            let hashedPass = auth.hashPassword(password, salt);
-            //  Insert user info into database
-            let queryInsertUserData = 'INSERT INTO Person VALUES (?, ?, ?, ?, ?)';
-            pool.query(queryInsertUserData, [username, hashedPass, firstname, lastname, salt], (err) => {
-                if (err) throw err;
-                console.log('One entry added to Person table.');
-            });
+    let rows = await pool.queryAsync(queryExistingUser, [username]);
 
-            //  Maybe use uuid?
-            //  User ID is just the username right now.
-            //  Add field to sessions table with foreign key to Persons
-            req.session.userID = username;
+    if (rows === undefined || rows.length === 0) {
+        console.log("This username is available.");
+        //  Generate salt and hashed password
+        let salt = auth.generateSalt();
+        let hashedPass = auth.hashPassword(password, salt);
+        //  Insert user info into database
+        let queryInsertUserData = 'INSERT INTO Person VALUES (?, ?, ?, ?, ?)';
+        let _ = await pool.queryAsync(queryInsertUserData, [username, hashedPass, firstname, lastname, salt]);
 
-            //  Need to save session when redirecting, see login
-            req.session.save(err => {
-                res.redirect('/home');
-            });
-        
-        //  Username is found (username not available)
-        } else {
-            console.log('This username is unavailable.');
+        //  Maybe use uuid?
+        //  User ID is just the username right now.
+        //  Add field to sessions table with foreign key to Persons
+        req.session.userID = username;
+
+        //  Need to save session when redirecting, see login
+        req.session.save(err => {
+            res.redirect('/home');
+        });
+    
+
+    //  Username is found (username not available)
+    } else {
+        console.log('This username is unavailable.');
         //  TODO: Redirect user/display error.
-        res.redirect('/login');
-        }
-    });
+        res.redirect('/register');
+    }
+
+
+
+    
     
 });
 
