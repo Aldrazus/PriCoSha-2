@@ -17,7 +17,15 @@
     {{#members}}
     <div class="members">
         <p>{{first_name}} {{last_name}} ({{username}})</p>
-        <a href="REPLACEME">Unfriend</a>
+        <a href="{{unfriend_link}}">Unfriend</a>
     </div>
     {{/members}}
 </section>
+<h2>Add Someone to Your Friend Group</h2>
+<form action="{{add_link}}" method="POST">
+    <input type="text" name="username" placeholder="Username" required>
+    <input type="submit" name="submit" value="Add">
+    {{#if error}}
+        <p class="error">{{error}}</p>
+    {{/if}}
+</form>

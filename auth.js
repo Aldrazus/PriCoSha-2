@@ -35,7 +35,7 @@ function redirectToHome(req, res, next) {
 }
 
 function authUserGroup(req, res, next) {
-    if (req.session.userID !== req.params.user) {
+    if (req.session.userID !== req.params.owner) {
         res.redirect('/home');
     } else {
         next();
