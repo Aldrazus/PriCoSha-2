@@ -5,7 +5,6 @@ const auth = require('../auth');
 
 router.get('/', auth.redirectToLogin, async function (req, res, next) {
     
-    /*
     let context = {
         userInfo: {
             firstName,
@@ -13,9 +12,7 @@ router.get('/', auth.redirectToLogin, async function (req, res, next) {
         },
         posts: []
     };
-    */
 
-    let userInfo;
 
     let queryUser = 'SELECT * FROM Person WHERE username = ?';
     let rows;
@@ -26,9 +23,9 @@ router.get('/', auth.redirectToLogin, async function (req, res, next) {
     }
     
     console.log(rows);
-    userInfo = {
-        firstName: rows[0].first_name.slice(),
-        lastName: rows[0].last_name.slice()
+    context.userInfo = {
+        first_name: rows[0].first_name.slice(),
+        last_name: rows[0].last_name.slice()
     };
 
     //  GET POSTS

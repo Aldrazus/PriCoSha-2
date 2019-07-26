@@ -1,0 +1,29 @@
+<h1>PriCoSha</h1>
+<section class="navbar">
+    <nav>
+        <a id="home" href="/profile">Home</a>
+        <a href="/post" id="home">Post</a>
+        <a href="/friends" id="friends">Friend Groups</a>
+        <a href="/logout" id="logout">Log Out</a>
+    </nav>
+</section>
+<section class="form-post">
+    <form action="/post/auth" method="POST">
+        <input type="text" name="file_path" placeholder="File Path" required>
+        <input type="text" name="content_name" placeholder="Content Name">
+        <input type="radio" name="public" value="public">Public
+        <input type="radio" name="public" value="private">Private
+        <input type="submit" name="submit" value="Post">
+    </form>
+</section>
+<section class="container-post">
+    <h3>Your Posts</h3>
+    {{#posts}}
+        <div class="post">
+            <p>At {{timest}}, you posted:</p>
+            <p>{{content_name}}</p>
+            <p>{{file_path}}</p>
+            <a href="{{link}}">View Comments</a>
+        </div>
+    {{/posts}}
+</section>

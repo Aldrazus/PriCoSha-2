@@ -16,6 +16,7 @@ const homeRouter = require('./routes/home');
 const logoutRouter = require('./routes/logout');
 const friendsRouter = require('./routes/friends');
 const manageRouter = require('./routes/manage');
+const postRouter = require('./routes/post');
 
 const app = express();
 
@@ -53,6 +54,7 @@ app.use('/home', homeRouter);
 app.use('/logout', logoutRouter);
 app.use('/friends', friendsRouter);
 app.use('/manage', manageRouter);
+app.use('/post', postRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
